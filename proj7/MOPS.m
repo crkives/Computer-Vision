@@ -70,8 +70,8 @@ function [ descriptors ] = MOPS( image, interestPoints, octave, hessians )
         patch = imresize(patch, [8 8]);
 
         % 3) normalize
-        avg = ones(8) .* mean(patch);
-        stdDev = ones(8) .* std(patch);
+        avg = mean(patch);
+        stdDev = std(patch);
         patch = patch - avg;
         patch = patch ./ stdDev;
         % save in descriptors

@@ -1,6 +1,6 @@
 function [ descriptors ] = MOPS( image, interestPoints, octave )
-    descriptors = zeros(size(interestPoints))
-    patchSize = 40 / 2^octave
+    descriptors = zeros(size(interestPoints));
+    patchSize = 40 / 2^octave;
     
     % Realign the image so that the dominant eigenvector is along
     % the horizontal
@@ -13,7 +13,7 @@ function [ descriptors ] = MOPS( image, interestPoints, octave )
     
     % rotate the image so that the dominant eigenvector is horizontal.
     % ???
-    angle = -radtodeg(atan(????));
+    angle = -radtodeg(atan(???));
     image = imrotate(image, angle);
     
     % for each interest point

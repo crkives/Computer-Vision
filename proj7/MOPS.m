@@ -1,47 +1,64 @@
-function [ descriptors ] = MOPS( image, interestPoints, octave )
-    descriptors = zeros(size(interestPoints))
-    patchSize = 40 / 2^octave
+function [ descriptors ] = MOPS( image, interestPoints, octave, hessians )
+    d = size(interestPoints);
+    numInterestPoints = d(1);
+    descriptors = zeros([numInterestPoints 8 8]);
+    patchSize = 40 / 2^octave;
     
-    % Realign the image so that the dominant eigenvector is along
-    % the horizontal
-    % First, calculate the eigenvectors of the image
-    image = rgb2gray(image);
-    image_double = double(image);
-    [evec, eval] = eig(image_double);
+    for idx = 1:numInterestPoints
+        currentPoint = interestPoints(idx);
+        x = currentPoint(1);
+        y = currentPoint(2);
+        % Realign the image so that the dominant eigenvector of the hessian
+        % is along the horizontal
+        image = rgb2gray(image);
+        %image_double = double(image);
+        
+        [evec, evals] = eig(hessians(x,y));
     
-    dominantEigVec = evec(:,1)
+        % The dominant eigenvector is the first eigenvector returned by eig
+        dominantEigVec = evec(:,1);
     
-    % rotate the image so that the dominant eigenvector is horizontal.
-    % ???
-    angle = -radtodeg(atan(????));
-    image = imrotate(image, angle);
+        % rotate the image so that the dominant eigenvector is horizontal.
+        angle = -radtodeg(atan(dominantEigVec(2)/dominantEigVec(1)));
+        rotImage = imrotate(image, angle);
     
-    % for each interest point
-    % extract a patch around it (the size of the patch is patchSize x 
-    %      patchSize)
-    % resample the patch to 8x8
-    % normalize the patch
-    for idx = 1:numel(interestPoints)
-        x = interestPoints(i,1);
-        y = interestPoints(i,2);
+        % for each interest point
+        % 1) extract a patch around it (the size of the patch is patchSize x 
+        %      patchSize)
+        % 2) resize the patch to 8x8
+        % 3) normalize the patch
         
         % create a patch of patchSize x patchSize of pixels around
         % interest point
+        startRow = x - (1/2)*patchSize;
+        endRow = x + ((1/2)*patchSize);
         
+        startCol = y - (1/2)*patchSize;
+        endCol = y + ((1/2)*patchSize);
         
-        % resize the patch to be 8 x 8
-        if ( patchSize < 8)
-            %patch = interp2(...);
+        % if the patchsize is even, the interest point can not be
+        % at the center of the patch. It will be the top left point
+        % of the lower right quadrant
+        if(mod(patchSize,2) == 0)
+            endRow = endRow - 1;
+            endCol = endCol - 1;
         end
-        if ( patchSize > 8)
-            patch = imresize(patch, [8 8]);
         
-        % normalize
+        % 1) extract out the patch from the rotated image
+        patch = rotImage(startRow:endRow, startCol:endCol);
+        % 2) resize the patch to be 8 x 8
+        %    if the image is larger than 8 x 8, it will be sized down
+        %    if the image is smaller than 8 x 8, it will be interpolated
+        %       using bicubic interpolation
+        patch = imresize(patch, [8 8]);
+
+        % 3) normalize
         avg = ones(8) .* mean(patch);
         stdDev = ones(8) .* std(patch);
         patch = patch - avg;
         patch = patch ./ stdDev;
         % save in descriptors
         descriptors(idx) = patch;
+    end
         
 end

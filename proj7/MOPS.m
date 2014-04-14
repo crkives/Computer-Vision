@@ -1,18 +1,35 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% MOPS - creates descriptors for all interest points in an image
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%ARGS:
+% image - the image the interest points come from
+% interestPoints - an n x 2 matrix, each row contains the x and y of 
+%                  an interest point
+% octave - an integer representing the octave to analyze
+% hessians - a [r c 2 2] matrix holding a hessian for every pixel in the
+%            image
+%OUTPUT:
+% descriptors- an [n 8 8] matrix where n is the number of interest points
+%              basically a matrix holding a descriptor for each interest
+%              point
 function [ descriptors ] = MOPS( image, interestPoints, octave, hessians )
     d = size(interestPoints);
     numInterestPoints = d(1);
     descriptors = zeros([numInterestPoints 8 8]);
     patchSize = 40 / 2^octave;
+    image = rgb2gray(image);
+    %image_double = double(image);
     
     for idx = 1:numInterestPoints
         currentPoint = interestPoints(idx);
         x = currentPoint(1);
         y = currentPoint(2);
+        
         % Realign the image so that the dominant eigenvector of the hessian
         % is along the horizontal
-        image = rgb2gray(image);
-        %image_double = double(image);
-        
         [evec, evals] = eig(hessians(x,y));
     
         % The dominant eigenvector is the first eigenvector returned by eig

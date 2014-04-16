@@ -5,7 +5,19 @@ function stitchedImage = stitchImages()
     ipNumber = 50; % the number of interestPoints desired after NMAS
     ipPerTransform = 6; % the number of interest points needed per affine transform
     corrThreshold = 0.5; % value of the cross correlation threshold
-
+    
+    % Read images into a cell array
+    fname = dir( strcat( path, fileExt ) );
+    numberImages = length(fname);
+    imagesArray = cell( numberImages, 1 );
+    
+    for index = 1:numberImages
+        
+        im = imread( strcat( path, fname(index).name ) );
+        imagesArray{ index } = im;
+        
+    end
+    
 
     % Scale each image to n different octaves scaled images
     % are stored into a cell array where each row is the
@@ -18,7 +30,7 @@ function stitchedImage = stitchImages()
     % Loop over images generating sa scaling pyramind, see [xx]
     for index = 1:numberImages
         
-        image = ;
+        image = imagesArray{ index };
         pyramid = multiscale( image, n );
         scaledImagesArray(:, index) = pyramid;
         
@@ -34,6 +46,9 @@ function stitchedImage = stitchImages()
     suppressionThreshold = 100; % this will need to be determined automatically
     allDescriptors = []; % this is a matrix containing the concat of all descriptors for a given octave
     
+    % Loop over each image at a given octave getting that images
+    % descriptors.  Then store the descriptors in a "matrix accumulator"
+    % called allDescriptors.
     for index = 1:numberImages
        
         image = scaledImagesArray{ ocatve, index };
@@ -41,7 +56,6 @@ function stitchedImage = stitchImages()
         interestPoints = NMAS( ipNumber, strengthMat, suppressionThreshold, octave );
         descriptors = MOPS( image, interestPoints, octave, hessians );
         allDescriptors = [ allDescriptors; descriptors ];
-        
 
     end
     

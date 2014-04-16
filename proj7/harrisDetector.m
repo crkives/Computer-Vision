@@ -1,7 +1,7 @@
 %type 1 = harris
 %type 2 = harmonic
 %type 3 = shi-Tomasi
-function [R, M, ix, iy]=harrisDetector(image, n, k, type)
+function [R, M]=harrisDetector(image, n, k, type)
     [r, c, v] = size(image);
     if (v > 1)
         image = rgb2gray(image);
@@ -42,8 +42,8 @@ function [R, M, ix, iy]=harrisDetector(image, n, k, type)
             %iMat = [ix(x,y) * ix(x,y), ix(x,y) * iy(x,y); ix(x,y) * iy(x,y), iy(x,y) * iy(x,y)];
             tempMat = zeros(2,2);
             
-            for i = 1:n
-                for j = 1:n
+            for i = 1:(n-1)
+                for j = 1:(n-1)
                     curX = startX+i;
                     curY = startY+j;
                     curIx = ix(curX, curY);
@@ -60,12 +60,11 @@ function [R, M, ix, iy]=harrisDetector(image, n, k, type)
             elseif (type == 2)
                 R(x,y) = det(tempMat)/(trace(tempMat));
             elseif (type == 3)
-                [eigv, val] = eig(tempMat);
+                [~, val] = eig(tempMat);
                 val = diag(val);
                 R(x,y) = min(val);
             else
-                %invalid...you know what i'll just make you wait for an
-                %empty R by running this damn thing
+                %error
             end
         end
     end

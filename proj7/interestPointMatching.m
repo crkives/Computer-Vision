@@ -29,11 +29,11 @@ function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerI
         curCol = corrMat(:,i) .* (corrMat(:,i) >= corrThresh);
         for j = i:numIms
             curRow = curCol(j,:);
-            [colMaxes, colIndexes] = max(curRow,2);%columns of A with maxes
+            [colMaxes, colIndexes] = max(curRow, [],2);%columns of A with maxes
             mat = zeros(numPerIm, numPerIm);
             mat(colIndexes,:) = colMaxes;
                 
-            [rowMax, rowIndexes] = max(mat, 1);
+            [rowMax, rowIndexes] = max(mat, [], 1);
             [selectedMaxes,rowOrigIndexes] = sort(rowMax);
             
             numFound = find(selectedMaxes);

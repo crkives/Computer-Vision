@@ -18,7 +18,7 @@
 function [ descriptors ] = MOPS( image, interestPoints, octave, hessians )
     d = size(interestPoints);
     numInterestPoints = d(1);
-    descriptors = cell( 0, 1 );
+    descriptors = [];
     patchSize = 40 / 2^octave;
     image = rgb2gray(image);
     image = im2double(image);
@@ -80,7 +80,7 @@ function [ descriptors ] = MOPS( image, interestPoints, octave, hessians )
             patch = patch - avg;
             patch = patch ./ stdDev;
             % save in descriptors
-            descriptors{end+1} = patch;
+            descriptors = [ descriptors; patch ];
         else
             error( 'Holy Hart Picks Batman, we have not eliminated all the bad corners!' );
         end

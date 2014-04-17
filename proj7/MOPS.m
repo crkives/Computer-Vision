@@ -64,10 +64,9 @@ function [ descriptors ] = MOPS( image, interestPoints, octave, hessians )
         end
         
         % Skip patch if its dimensions exceed matrix dimensions
-        if( startRow >= 1 && endRow <= size( image, 1 ) && startCol >= 1 && endCol <= size( image, 2 ) )
+        if( startRow >= 1 && endRow <= size( image, 1 ) && startCol >= 1 && endCol <= size( image, 2 ) && startCol < endCol && startRow < endRow )
             
             
-        
             % 1) extract out the patch from the rotated image
             patch = rotImage(startRow:endRow, startCol:endCol);
             % 2) resize the patch to be 8 x 8

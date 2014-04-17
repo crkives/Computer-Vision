@@ -51,10 +51,10 @@ function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerI
             if (size(numFound,2) >= ipToFindPerIm) %if the maxes are more than the amount we are looking for
                 insertVal(1:ipToFindPerIm,1) = fromIm; %store from im index
                 insertVal(1:ipToFindPerIm,2) = toIm;%store to im index
-                insertVal(1:ipToFindPerIm,3) = rowOrigIndexes(1:ipToFindPerIm); 
-                insertVal(1:ipToFindPerIm,4) = rowIndexes(rowOrigIndexes(1:ipToFindPerIm));
-                %insertVal(1:ipToFindPerIm,3) = colIndexes(rowIndexes(rowOrigIndexes(1:ipToFindPerIm))); 
+                %insertVal(1:ipToFindPerIm,3) = rowOrigIndexes(1:ipToFindPerIm); 
                 %insertVal(1:ipToFindPerIm,4) = rowIndexes(rowOrigIndexes(1:ipToFindPerIm));
+                insertVal(1:ipToFindPerIm,3) = colIndexes(rowIndexes(rowOrigIndexes(1:ipToFindPerIm))); 
+                insertVal(1:ipToFindPerIm,4) = rowIndexes(rowOrigIndexes(1:ipToFindPerIm));
 
                 mappedIndexes = [mappedIndexes;insertVal];
             end

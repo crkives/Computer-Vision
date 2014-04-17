@@ -5,7 +5,7 @@ function outImages = stitchImages( path, fileExt)
     ipNumber = 50; % the number of interestPoints desired after NMAS
     ipPerTransform = 6; % the number of interest points needed per affine transform
     corrThreshold = .1; % value of the cross correlation threshold
-    n = 4; % the number of octaves to use
+    n = 1; % the number of octaves to use
     
     % Read images into a cell array
     fname = dir( strcat( path, fileExt ) );
@@ -27,7 +27,7 @@ function outImages = stitchImages( path, fileExt)
     % is the same image at n different scales
     
     % 2D cell array to store all images at each scale
-    scaledImagesArray = cell(4, numberImages);
+    scaledImagesArray = cell(n, numberImages);
     
     % Loop over images generating sa scaling pyramind, see [xx]
     for index = 1:numberImages
@@ -74,6 +74,7 @@ function outImages = stitchImages( path, fileExt)
         imList = scaledImagesArray( octave + 1, : );
         outIm = stitching(imList, mapping, allInterestPoints);
         imshow(outIm);
+        figure;
         outImages{octave + 1, 1} = outIm;
     end
         

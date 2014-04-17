@@ -1,27 +1,59 @@
-function interestPoints = NMAS( N, R, threshold, octave )
+function interestPoints = NMAS( N, R, octave )
 
     %N = 6;
     %threshold = -2.0;
-    patchSize = 40 / 2^octave;
-    [ row, col, val ] = find( R.*(R > threshold) );
+    patchSize = uint8( 40 / 2^octave );
+    %[ row, col, val ] = find( R.*(R > threshold) );
     
     
     % Remove interest points that are within patch size of the image edge
-    startRowVec = col - (1/2)*patchSize;
-    endRowVec = col + ((1/2)*patchSize);
+    halfPatch = ceil( (1/2)*patchSize );
+    
+    topStartRow = 1;
+    topEndRow = halfPatch + 1;
+    bottomStartRow = size( R, 1 ) - halfPatch - 1;
+    bottomEndRow = size( R, 1 );
         
-    startColVec = row - (1/2)*patchSize;
-    endColVec = row + ((1/2)*patchSize);
+    frontStartCol = 1;
+    frontEndCol = halfPatch + 1;
+    backStartCol =size( R, 2 ) - halfPatch - 1;
+    backEndCol = size( R, 2 );
     
-    if( mod( patchSize, 2 ) == 0 )
-        endRowVec = endRowVec - 1;
-        endColVec = endCoVec - 1;
-    end
+    R(topStartRow:topEndRow, : ) = -10000;
+    R(bottomStartRow:bottomEndRow, : ) = -10000;
     
-    goodPoints = ( startRowVec >= 1 & endRowVec <= size( image, 1 ) & startColVec >= 1 & endColVec <= size( image, 2 ) );
-    newRow = row( goodPoints == 1 );
-    newCol = col( goodPoints == 1 );
-    newVal = val( goodPoints == 1 );
+    R(:, frontStartCol:frontEndCol) = -10000;
+    R(:, backStartCol:backEndCol) = -10000;
+    
+    sortedValues = sort( R(:) );
+    %dah= 'Data from NMAS'
+    %octave
+    %size( R )
+    %size( sortedValues )
+    maxValues = sortedValues( end-150:end );
+    maxIndex = ismember( R, maxValues );
+    index = find( maxIndex );
+    [x y] = ind2sub( size(R), index );
+    idx = sub2ind( [size(R, 1) size(R, 2) ], y, x );
+    v = R( idx );
+    
+    %dah = 'newRow and newCol'
+    newRow = y;
+    %size(newRow)
+    newCol = x;
+    %size(newCol)
+    newVal = v;
+    
+    
+   % if( mod( patchSize, 2 ) == 0 )
+   %     endRowVec = endRowVec - 1;
+   %     endColVec = endColVec - 1;
+   % end
+    
+   % goodPoints = ( startRowVec >= 1 & endRowVec <= size( R, 1 ) & startColVec >= 1 & endColVec <= size( R, 2 ) );
+   % newRow = row( goodPoints == 1 );
+   % newCol = col( goodPoints == 1 );
+   % newVal = val( goodPoints == 1 );
 
 
     [ sortedVal, sortedIndecies ] = sort( newVal, 'descend' );
@@ -33,15 +65,30 @@ function interestPoints = NMAS( N, R, threshold, octave )
     distMatrix = squareform( distVector );
 
     pointRadii = zeros( size( newRow, 1 ), 1 );
-    pointRadii( 1 ) = size( R, 1 );
+    pointRadii( 1, 1 ) = size( R, 1 );
+    %dah = 'pointRadii size'
+    %size( pointRadii )
 
     for i = 2: size( newRow, 1 )
+        %dah = 'current i'
+        %i
         rowVecDist = distMatrix( i, : );
+        %dah = 'rowVecDist size'
+        %size( rowVecDist )
         strength = sortedVal( i );
-        upperIndex = find( abs( sortedVal ) > abs( strength ), 1, 'last' );
+        %dah = 'Strength'
+        %strength
+        upperIndex = find( sortedVal > strength, 1, 'last' );
+        %dah = 'upper index'
+        %upperIndex
         potentialVec = rowVecDist( 1:upperIndex );
+        %dah = 'potentialVec size'
+        %size( potentialVec )
+        %potentialVec
         radius = min( potentialVec );
-        pointRadii( i ) = radius;
+        %dah = 'current radius'
+        %radius
+        pointRadii( i, 1 ) = radius;
     
     end
 

@@ -19,9 +19,9 @@ function [ descriptors ] = MOPS( image, interestPoints, octave, hessians )
     d = size(interestPoints);
     numInterestPoints = d(1);
     descriptors = [];
-    patchSize = 40 / 2^octave;
-    image = rgb2gray(image);
-    image = im2double(image);
+    patchSize = uint8( 40 / 2^octave );
+    %image = rgb2gray(image);
+    %image = im2double(image);
     
     for idx = 1:numInterestPoints
         currentPoint = interestPoints(idx,:);
@@ -47,11 +47,13 @@ function [ descriptors ] = MOPS( image, interestPoints, octave, hessians )
         
         % create a patch of patchSize x patchSize of pixels around
         % interest point
-        startRow = y - (1/2)*patchSize;
-        endRow = y + ((1/2)*patchSize);
+        halfPatch = ceil( (1/2)*patchSize );
         
-        startCol = x - (1/2)*patchSize;
-        endCol = x + ((1/2)*patchSize);
+        startRow = y - halfPatch;
+        endRow = y + halfPatch;
+        
+        startCol = x - halfPatch;
+        endCol = x + halfPatch;
         
         % if the patchsize is even, the interest point can not be
         % at the center of the patch. It will be the top left point

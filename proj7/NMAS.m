@@ -97,7 +97,8 @@ function interestPoints = NMAS( N, R, octave )
     finalCol = sortedCol( sortedRadiiIndicies );
     finalVal = sortedVal( sortedRadiiIndicies );
 
-    interestPoints = [ finalRow( 1:N, 1 ), finalCol( 1:N, 1 ), sortedRadii( 1:N, 1 ) , finalVal(1:N)];
+    %interestPoints = [ finalRow( 1:N, 1 ), finalCol( 1:N, 1 ), sortedRadii( 1:N, 1 ) , finalVal(1:N)];
+    interestPoints = [ finalRow( 1:N, 1 ), finalCol( 1:N, 1 )];
 
 end
 

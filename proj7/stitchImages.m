@@ -1,5 +1,5 @@
 % Master Image Stitching Function
-function stitchedImage = stitchImages( path, fileExt)
+function outImages = stitchImages( path, fileExt)
 
     % Global Properties
     ipNumber = 50; % the number of interestPoints desired after NMAS
@@ -45,8 +45,12 @@ function stitchedImage = stitchImages( path, fileExt)
     
     % Current ocatave or scale being used, must loop through 0 to 3
     % octaves.
+    
+    outImages = cell(n, 1);
+    
     for octave = 0:n-1
         allDescriptors = []; % this is a matrix containing the concat of all descriptors for a given octave
+        allInterestPoints = [];
         %dah = 'Before loop'
         %numberImages
         % Loop over each image at a given octave getting that images
@@ -60,15 +64,17 @@ function stitchedImage = stitchImages( path, fileExt)
             %imshow( image );
             [strengthMat, hessians] = harrisDetector( image, 6, 0.04, 1);
             interestPoints = NMAS( ipNumber, strengthMat, octave );
+            allInterestPoints = [ allInterestPoints; interestPoints ];
             descriptors = MOPS( image, interestPoints, octave, hessians );
             allDescriptors = [ allDescriptors; descriptors ];
 
         end
     
         % TODO: Code below is for later use when actually stitching
-        %mapping = interestPointMatching( descriptors, ipNumber, ipPerTransform, corrThreshold );
-        %transform = buildTransformMat( mapping );
-        %transformedImage = applyTransformation( image, transform );
+        mapping = interestPointMatching( descriptors, ipNumber, ipPerTransform, corrThreshold );
+        imList = scaledImagesArray( octave + 1, : );
+        outIm = stitching(imList, mapping, allInterestPoints);
+        outImages{octave + 1, 1} = outIm;
     end
         
 

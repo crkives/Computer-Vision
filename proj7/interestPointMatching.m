@@ -6,17 +6,17 @@ function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerI
     corrMat = zeros(sizeCorrMat);
     
     %for each image
-    for i=1:sizeCorrMat
-        xcorrMatResult = normxcorr2(descriptors(i:(i+sizePatch-1),i:(i+sizePatch-1)), descriptors);
-        curImDesc = floor(i / numPerIm) + 1;
+    for fromIm=1:sizeCorrMat
+        xcorrMatResult = normxcorr2(descriptors(fromIm:(fromIm+sizePatch-1),fromIm:(fromIm+sizePatch-1)), descriptors);
+        curImDesc = floor(fromIm / numPerIm) + 1;
 
         %store results
-        for j=1:sizeCorrMat
-            if (curImDesc ~= floor(j/numPerIm)+1)
-                corrMat(i,j) = xcorrMatResult(((j-1)*sizePatch)+1,1);
-                corrMat(j,i) = corrMat(i,j);
+        for toIm=1:sizeCorrMat
+            if (curImDesc ~= floor(toIm/numPerIm)+1)
+                corrMat(fromIm,toIm) = xcorrMatResult(((toIm-1)*sizePatch)+1,1);
+                corrMat(toIm,fromIm) = corrMat(fromIm,toIm);
             else
-                corrMat(i,j) = -1;
+                corrMat(fromIm,toIm) = -1;
             end
         end
     end
@@ -25,10 +25,10 @@ function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerI
     mappedIndexes = [];
     
     %for each image set
-    for i = 1:numIms
-        curCol = corrMat(:,i) .* (corrMat(:,i) >= corrThresh);
-        for j = i:numIms
-            curRow = curCol(j,:);
+    for fromIm = 1:numIms
+        curCol = corrMat(:,fromIm) .* (corrMat(:,fromIm) >= corrThresh);
+        for toIm = fromIm:numIms
+            curRow = curCol(toIm,:);
             [colMaxes, colIndexes] = max(curRow, [],2);%columns of A with maxes
             mat = zeros(numPerIm, numPerIm);
             mat(colIndexes,:) = colMaxes;
@@ -39,8 +39,8 @@ function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerI
             numFound = find(selectedMaxes);
             
             if (size(numFound,1) >= ipToFindPerIm)
-                insertVal(1:ipToFindPerIm,1) = i;
-                insertVal(1:ipToFindPerIm,2) = j;
+                insertVal(1:ipToFindPerIm,1) = fromIm;
+                insertVal(1:ipToFindPerIm,2) = toIm;
                 insertVal(1:ipToFindPerIm,3) = rowIndexes(rowOrigIndexes(1:ipToFindPerIm));
                 insertVal(1:ipToFindPerIm,4) = rowOrigIndexes(1:ipToFindPerIm);
 

@@ -1,0 +1,21 @@
+%imlist - cell array of images with the current one being indexed by curImIndex
+%cellList - cell array with each index of an image containing the indexes
+%       of the images it references
+%curImIndex - index of image we are using
+%interestPoints - cell array of interest points
+%visitedList - a list containing the items we have visited thus far.
+%   Should be [] initially
+%corners - a cell array with each image index containing column vectors of
+%   corners
+%curTransformMat - the transformation used to get into the image space of
+%   of the prior image (initially identity [1,0,0;0,1,0;0,0,1])
+function [corners, transformCells, visitedList] = prepStitch(imList, cellList, curImIndex, prevImIndex, interestPoints, visitedList, corners, curTransformMats)
+    vecConnectIms = cellList{curImIndex};
+    visitedList = [visitedList,curImIndex];
+    
+    %build corners
+    
+    for i=1:size(vecConnectIms)
+        prepStitch(imList, vecConnectIms(i), cellList, interestPoints, visitedList);
+    end
+end

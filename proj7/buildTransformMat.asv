@@ -21,9 +21,11 @@ function transform=buildTransformMat(corrVec)
     newVec = newVec';
     aVec = mat\newVec;
     
-    transformVec = aVec(1:size(aVec,1)-2,:);
-    transform = reshape(transformVec, size(transformVec,1)/2,size(transformVec,1)/2,1);
-    translationVec = aVec(size(aVec,1)-1:size(aVec,1),:);
+    aVec = aVec(:, n+1);
+    
+    trasformVec = aVec(:,size(aVec,2)-2);
+    transform = reshape(trasformVec, size(trasformVec,2)/2,size(trasformVec,2)/2,1);
+    translationVec = aVec(:,size(aVec,2)-1:size(aVec,2));
     transform = [transform, translationVec(:)];
     transform = [transform; zeros(1,size(transform,2)-1),1];
 end

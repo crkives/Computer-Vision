@@ -74,13 +74,17 @@ function [ descriptors ] = MOPS( image, interestPoints, octave, hessians )
             %    if the image is larger than 8 x 8, it will be sized down
             %    if the image is smaller than 8 x 8, it will be interpolated
             %       using bicubic interpolation
-            patch = imresize(patch, [8 8]);
+            patch = im2double(imresize(patch, [8 8]));
 
             % 3) normalize
             avg = mean2(patch);
             stdDev = std2(patch);
             patch = patch - avg;
-            patch = patch ./ stdDev;
+            if stdDev ~= 0
+                patch = patch ./ stdDev;
+            else
+                patch(1,1) = 1;
+            end
             % save in descriptors
             descriptors = [ descriptors; patch ];
         else

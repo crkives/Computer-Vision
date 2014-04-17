@@ -4,7 +4,7 @@ function outImages = stitchImages( path, fileExt)
     % Global Properties
     ipNumber = 50; % the number of interestPoints desired after NMAS
     ipPerTransform = 6; % the number of interest points needed per affine transform
-    corrThreshold = 0.5; % value of the cross correlation threshold
+    corrThreshold = .1; % value of the cross correlation threshold
     n = 4; % the number of octaves to use
     
     % Read images into a cell array
@@ -73,6 +73,7 @@ function outImages = stitchImages( path, fileExt)
         mapping = interestPointMatching( allDescriptors, ipNumber, ipPerTransform, corrThreshold );
         imList = scaledImagesArray( octave + 1, : );
         outIm = stitching(imList, mapping, allInterestPoints);
+        imshow(outIm);
         outImages{octave + 1, 1} = outIm;
     end
         

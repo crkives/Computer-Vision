@@ -8,7 +8,8 @@ function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerI
     %for each descriptor
     for i=1:numDesc
         index = (sizePatch*(i-1))+1; %calculate the starting index
-        xcorrMatResult = normxcorr2(descriptors(index:(index+sizePatch-1),1:sizePatch), descriptors);%get the correlation
+        curDescriptor = descriptors(index:(index+sizePatch-1),1:sizePatch);
+        xcorrMatResult = normxcorr2(curDescriptor, descriptors);%get the correlation
         curImDesc = floor(i / numPerIm) + 1; %get the image index that we are working on
 
         %store results
@@ -29,7 +30,6 @@ function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerI
     %for each image set
     for fromIm = 1:numIms
         colIdx = numPerIm * (fromIm-1) + 1;%calc the start of the im range in columns
-        colIdx
         curCol = corrMat(:,colIdx:(colIdx+numPerIm-1)) .* (corrMat(:,colIdx:(colIdx+numPerIm-1)) >= corrThresh);%grab all the columns of that image and zero out anything less than the threshold
         
         %from the fromImage onward

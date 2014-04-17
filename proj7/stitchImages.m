@@ -70,8 +70,7 @@ function outImages = stitchImages( path, fileExt)
 
         end
     
-        % TODO: Code below is for later use when actually stitching
-        mapping = interestPointMatching( descriptors, ipNumber, ipPerTransform, corrThreshold );
+        mapping = interestPointMatching( allDescriptors, ipNumber, ipPerTransform, corrThreshold );
         imList = scaledImagesArray( octave + 1, : );
         outIm = stitching(imList, mapping, allInterestPoints);
         outImages{octave + 1, 1} = outIm;

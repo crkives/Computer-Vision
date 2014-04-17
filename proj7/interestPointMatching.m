@@ -1,5 +1,5 @@
 function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerIm, corrThresh)
-    [sizex, sizePatch] = size(decriptors); %get the size of the descriptors and the size of each patch
+    [sizex, sizePatch] = size(descriptors); %get the size of the descriptors and the size of each patch
     
     numDesc = sizex/sizePatch; %calculates the number of descriptors exist
     numIms = numDesc/numPerIm; %calculates the number of images we are looking at

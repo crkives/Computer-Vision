@@ -8,7 +8,7 @@ function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerI
     %for each descriptor
     for i=1:numDesc
         index = (sizePatch*(i-1))+1; %calculate the starting index
-        xcorrMatResult = normxcorr2(descriptors(index:(i+sizePatch-1),1:sizePatch), descriptors);%get the correlation
+        xcorrMatResult = normxcorr2(descriptors(index:(index+sizePatch-1),1:sizePatch), descriptors);%get the correlation
         curImDesc = floor(i / numPerIm) + 1; %get the image index that we are working on
 
         %store results

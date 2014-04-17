@@ -10,7 +10,10 @@
 %curTransformMat - the transformation used to get into the image space of
 %   of the prior image (initially identity [1,0,0;0,1,0;0,0,1])
 function [corners, visitedList, warpedIms] = prepStitch(imList, cellList, curImIndex, mapping, interestPoints, visitedList, corners, curTransformMat, warpedIms)
-    vecConnectIms = cellList{curImIndex};
+    vecConnectIms = [];
+    if (curImIndex <= length(cellList))
+        vecConnectIms = cellList{curImIndex};
+    end
     visitedList = [visitedList,curImIndex];
     im = imList{curImIndex};
     
@@ -26,17 +29,19 @@ function [corners, visitedList, warpedIms] = prepStitch(imList, cellList, curImI
     imWarp = imwarp(im, affine2d(curTransformMat));    
     warpedIms{curImIndex} = imWarp;
     for i=1:size(vecConnectIms)
-        if (~any(visitedList == vecConnectIms(i)))
-            indexFrom = mapping(:,1) == curImIndex;
-            mappingFrom = mapping(indexFrom,:);
-            indexTo = mappingFrom(:,2) == vecConnectIms(i);
-            mappingValuesIpValues = mappingFrom(indexTo,3:4);
+        if (~any(vecConnectIms(i) == visitedList))
             
-            fromIp = interestPoints(mappingValuesIpValues(:,1),:);
-            toIp = interestPoints(mappingValuesIpValues(:,2),:);
-            transform = buildTransformMat([fromIp,toIp]);
-            transform = curTransformMat * transform;
-            [corners, visitedList, warpedIms] = prepStitch(imList, cellList, curImIndex, mapping, interestPoints, visitedList, corners, transform, warpedIms);
+             indexFrom = mapping(:,1) == curImIndex;
+             mappingFrom = mapping(indexFrom,:);
+             indexTo = mappingFrom(:,2) == vecConnectIms(i);
+             mappingValuesIpValues = mappingFrom(indexTo,3:4);
+             
+             fromIp = interestPoints(mappingValuesIpValues(:,1),:);
+             toIp = interestPoints(mappingValuesIpValues(:,2),:);
+             
+             transform = buildTransformMat([fromIp,toIp]);
+             transform = curTransformMat * transform;
+             [corners, visitedList, warpedIms] = prepStitch(imList, cellList, vecConnectIms(i), mapping, interestPoints, visitedList, corners, transform, warpedIms);
         end
     end
 end

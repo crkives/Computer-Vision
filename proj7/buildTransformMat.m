@@ -23,7 +23,7 @@ function transform=buildTransformMat(corrVec)
     
     transformVec = aVec(1:size(aVec,1)-2,:);
     transform = reshape(transformVec, size(transformVec,1)/2,size(transformVec,1)/2,1);
-    translationVec = aVec(size(aVec,1)-1:size(aVec,1),:);
+    translationVec = [-1*aVec(size(aVec,1)-1);aVec(size(aVec,1),:)];
     transform = [transform, translationVec(:)];
     transform = [transform; zeros(1,size(transform,2)-1),1];
 end

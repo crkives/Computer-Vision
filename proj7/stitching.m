@@ -7,7 +7,7 @@ function outIm = stitching(imList, mapping, interestPoints)
     [corners, visitedList, warpedIms] = prepStitch(imList, imMapping, baseImIdx, mapping, interestPoints, visitedList, corners, eye(3), warpedIms);
     
     cornersMat = zeros(4,4*size(visitedList,2));
-    for i=1:length(imMapping)
+    for i=1:length(imList)
        index = (4*(i-1))+1;
        cornersMat(1:3,index:index+3) = corners{i};
     end
@@ -15,35 +15,35 @@ function outIm = stitching(imList, mapping, interestPoints)
     maxXY = max(cornersMat, [], 2);
     minXY = min(cornersMat, [], 2);
     
-    lowerBoundY = abs(minXY(2));
-    upperBoundY = lowerBoundY + maxXY(2);
+    im = imList{visitedList(1)};
+    [sizex,sizey] = size(im);
     
-    lowerBoundX = abs(minXY(1));
-    upperBoundX = lowerBoundX + maxXY(1);
+    lowerBoundY = abs(minXY(1));
+    upperBoundY = lowerBoundY + maxXY(1);
+    
+    lowerBoundX = abs(minXY(2));
+    upperBoundX = lowerBoundX + maxXY(2);
+    
     
     offsetToBaseImX = 1+lowerBoundX;
     offsetToBaseImY = 1+lowerBoundY;
     
-    outIm = zeros(upperBoundX, upperBoundY);
-    visitedList(2)
-    im = imList{visitedList(1)};
-    [sizex,sizey] = size(im);
-    outIm(offsetToBaseImX:offsetToBaseImX+sizex,offsetToBaseImY:offsetToBaseImY+sizey) = im;
+    outIm = zeros(ceil(upperBoundX), ceil(upperBoundY));
+    outIm(offsetToBaseImX:offsetToBaseImX+sizex-1,offsetToBaseImY:offsetToBaseImY+sizey-1) = im;
     
     for imNum = 2:size(visitedList,2)
        imIdx = visitedList(imNum);
        curIm = warpedIms{imIdx}; 
        [sizex,sizey] = size(curIm);
        
-       curMinXY = min(corners{imIdx}, [], 2);
+       curMinXY = corners{imIdx};
+       imMinX = offsetToBaseImX+curMinXY(2);
+       imMinY = offsetToBaseImY+curMinXY(1);
        
-       imMinX = offsetToBaseImX +curMinXY(1);
-       imMinY = offsetToBaseImY + curMinXY(2);
+       newIm = zeros(ceil(upperBoundX), ceil(upperBoundY));
+       newIm(imMinX:(imMinX+sizex-1),imMinY:(imMinY+sizey-1)) = curIm;
        
-       newIm = zeros(upperBoundX, upperBoundY);
-       newIm(imMinX:(imMinX+sizex),imMinY:(imMinY+sizey)) = curIm;
-       
-       outIm = imfuse(outIm, newIm);
+       outIm = imfuse(outIm, newIm, 'blend');
     end
     
 %     translate = transform(1:2,3);

@@ -29,12 +29,13 @@ function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerI
     %for each image set
     for fromIm = 1:numIms
         colIdx = numPerIm * (fromIm-1) + 1;%calc the start of the im range in columns
-        curCol = corrMat(:,colIdx:(colIdx+numPerIm)) .* (corrMat(:,colIdx:(colIdx+numPerIm)) >= corrThresh);%grab all the columns of that image and zero out anything less than the threshold
+        colIdx
+        curCol = corrMat(:,colIdx:(colIdx+numPerIm-1)) .* (corrMat(:,colIdx:(colIdx+numPerIm-1)) >= corrThresh);%grab all the columns of that image and zero out anything less than the threshold
         
         %from the fromImage onward
         for toIm = (fromIm+1):numIms 
             rowIdx = numPerIm * (toIm-1) + 1;%calc the start of the im range in the row
-            curRow = curCol(rowIdx:(rowIdx+numPerIm),:);%grab the rows of the columns
+            curRow = curCol(rowIdx:(rowIdx+numPerIm-1),:);%grab the rows of the columns
             
             [colMaxes, colIndexes] = max(curRow, [],2);%get columns indexs of fromIm with maxes in columns
             mat = zeros(numPerIm, numPerIm); %create storage

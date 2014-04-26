@@ -1,10 +1,11 @@
-function [outGradient,test]=generateGradient(im)
+function outGradient=generateGradient(im)
     gradx = [-1, 0, 1];
     grady = [1;  0;-1];
     [sizex, sizey, sizez] = size(im);
     
     totGradientsX = zeros(sizex,sizey,sizez);
     totGradientsY = zeros(sizex,sizey,sizez);
+    normVec = zeros(sizez,1);
     for i=1:sizez
         %possibly use conv2?
         imGradX = imfilter(im2double(im(:,:,i)),gradx);
@@ -12,16 +13,12 @@ function [outGradient,test]=generateGradient(im)
                 
         totGradientsX(:,:,i) = imGradX;
         totGradientsY(:,:,i) = imGradY;
-        %imshow(imGradX); figure;
-        %imshow(imGradY); figure;
+        magnitudeMat = sqrt(imGradX.^2 + imGradY.^2);
+        
+        normVec(i) = norm(magnitudeMat);
     end
     
-    %normalize first?
-    [~, maxInds] = max(sqrt(totGradientsX.^2 + totGradientsY.^2),[],3);
-    test = im(maxInds);
-    outGradient(:,:,1) = totGradientsX;
-    outGradient(:,:,2) = totGradientsY;
-    
-    
-    %NOTE: seems that our output here is incorrect
+    [~, maxInds] = max(normVec);
+    outGradient(:,:,1) = totGradientsX(:,:,maxInds);
+    outGradient(:,:,2) = totGradientsY(:,:,maxInds);
 end

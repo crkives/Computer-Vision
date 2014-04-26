@@ -2,9 +2,6 @@ function binVec = anglePartitioning(cell, binTotAmt, binDist)
     binVec = zeros(1,binTotAmt);
     maxBin = binTotAmt * binDist;
     
-    %bin = 1:binTotAmt;
-    %binFunc = @(block, bin) 
-    
     for bin=1:binTotAmt
        curBin = binDist * (bin-1);
        nextBin = curBin + binDist;

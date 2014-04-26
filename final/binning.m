@@ -16,8 +16,8 @@ function cellBins = binning(window, cellSize, binTotAmt, binDist)
     cellBins = arrayfun(binFunc, positionsX, positionsY, 'UniformOutput',false);
     
     %unlinearize the cells
-    cellX = windowX/cellSize;
-    cellY = windowY/cellSize;
+    cellX = floor(windowX/cellSize);
+    cellY = floor(windowY/cellSize);
     cellBins = reshape(cellBins, cellX, cellY, 1);
     
     

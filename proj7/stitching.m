@@ -11,7 +11,6 @@ function outIm = stitching(imList, mapping, interestPoints)
     cornersMat = zeros(4,4*size(visitedList,2));
     for i=1:size(visitedList,2)
        index = (4*(i-1))+1;
-       corners{i}
        cornersMat(1:3,index:index+3) = corners{i};
     end
     

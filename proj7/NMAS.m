@@ -30,7 +30,7 @@ function interestPoints = NMAS( N, R, octave )
     %octave
     %size( R )
     %size( sortedValues )
-    maxValues = sortedValues( end-150:end );
+    maxValues = sortedValues( end-500:end );
     maxIndex = ismember( R, maxValues );
     index = find( maxIndex );
     [x y] = ind2sub( size(R), index );

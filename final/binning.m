@@ -8,12 +8,18 @@ function cellBins = binning(window, cellSize, binTotAmt, binDist)
     y=cellSize*((1:(windowY/cellSize))-1)+1;
     positionsX=repmat(x, size(y));
     positionsY=repmat(y, size(x));
+        
+%     extractFunc = @(r,c) window(r:(r+cellSize-1),c:(c+cellSize-1),:);
+%     cells = arrayfun(extractFunc,positionsX,positionsY,'UniformOutput',false);
     
-    extractFunc = @(r,c) window(r:(r+cellSize-1),c:(c+cellSize-1),:);
-    cells = arrayfun(extractFunc,positionsX,positionsY,'UniformOutput',false);
-
-    binFunc = @(cell) anglePartitioning(cell, binTotAmt, binDist);
-    cellBins = cellfun(binFunc, cells, 'UniformOutput',false);
+    binFunc = @(r,c) anglePartitioning(window(r:(r+cellSize-1),c:(c+cellSize-1),:), binTotAmt, binDist);
+    cellBins = arrayfun(binFunc, positionsX, positionsY, 'UniformOutput',false);
+    
+    %unlinearize the cells
+    cellX = windowX/cellSize;
+    cellY = windowY/cellSize;
+    cellBins = reshape(cellBins, cellX, cellY, 1);
+    
     
 %     for cellX=1:windowX/cellSize
 %         cellStartX = cellSize*(cellX-1)+1;

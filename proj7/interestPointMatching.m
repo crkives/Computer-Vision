@@ -32,31 +32,32 @@ function mappedIndexes=interestPointMatching(descriptors, numPerIm, ipToFindPerI
         colIdx = numPerIm * (fromIm-1) + 1;%calc the start of the im range in columns
         curCol = corrMat(:,colIdx:(colIdx+numPerIm-1)) .* (corrMat(:,colIdx:(colIdx+numPerIm-1)) >= corrThresh);%grab all the columns of that image and zero out anything less than the threshold
         
-        
         %from the fromImage onward
-        for toIm = (fromIm+1):numIms 
-            rowIdx = numPerIm * (toIm-1) + 1;%calc the start of the im range in the row
-            curRow = curCol(rowIdx:(rowIdx+numPerIm-1),:);%grab the rows of the columns
-            
-            [colMaxes, colIndexes] = max(curRow, [],2);%get columns indexs of fromIm with maxes in columns
-            mat = zeros(numPerIm, numPerIm); %create storage
-            indexes = sub2ind([numPerIm, numPerIm], (1:numPerIm)', colIndexes);
-            mat(indexes) = colMaxes; %set the rows to their maxes with zeros elsewhere
-                
-            [rowMax, rowIndexes] = max(mat, [], 1); %get the max of the rows
-            [selectedMaxes,rowOrigIndexes] = sort(rowMax, 'descend'); %sort the maxes and get their indices
-            
-            numFound = find(selectedMaxes); %count the maxes
-            
-            if (size(numFound,2) >= ipToFindPerIm) %if the maxes are more than the amount we are looking for
-                insertVal(1:ipToFindPerIm,1) = fromIm; %store from im index
-                insertVal(1:ipToFindPerIm,2) = toIm;%store to im index
-                %insertVal(1:ipToFindPerIm,3) = rowOrigIndexes(1:ipToFindPerIm); 
-                %insertVal(1:ipToFindPerIm,4) = rowIndexes(rowOrigIndexes(1:ipToFindPerIm));
-                insertVal(1:ipToFindPerIm,3) = colIndexes(rowIndexes(rowOrigIndexes(1:ipToFindPerIm))); 
-                insertVal(1:ipToFindPerIm,4) = rowIndexes(rowOrigIndexes(1:ipToFindPerIm));
+        for toIm = 1:numIms 
+            if (fromIm ~= toIm)
+                rowIdx = numPerIm * (toIm-1) + 1;%calc the start of the im range in the row
+                curRow = curCol(rowIdx:(rowIdx+numPerIm-1),:);%grab the rows of the columns
 
-                mappedIndexes = [mappedIndexes;insertVal];
+                [colMaxes, colIndexes] = max(curRow, [],2);%get columns indexs of fromIm with maxes in columns
+                mat = zeros(numPerIm, numPerIm); %create storage
+                indexes = sub2ind([numPerIm, numPerIm], (1:numPerIm)', colIndexes);
+                mat(indexes) = colMaxes; %set the rows to their maxes with zeros elsewhere
+
+                [rowMax, rowIndexes] = max(mat, [], 1); %get the max of the rows
+                [selectedMaxes,rowOrigIndexes] = sort(rowMax, 'descend'); %sort the maxes and get their indices
+
+                numFound = find(selectedMaxes); %count the maxes
+
+                if (size(numFound,2) >= ipToFindPerIm) %if the maxes are more than the amount we are looking for
+                    insertVal(1:ipToFindPerIm,1) = fromIm; %store from im index
+                    insertVal(1:ipToFindPerIm,2) = toIm;%store to im index
+                    %insertVal(1:ipToFindPerIm,3) = rowOrigIndexes(1:ipToFindPerIm); 
+                    %insertVal(1:ipToFindPerIm,4) = rowIndexes(rowOrigIndexes(1:ipToFindPerIm));
+                    insertVal(1:ipToFindPerIm,3) = colIdx+colIndexes(rowIndexes(rowOrigIndexes(1:ipToFindPerIm))); 
+                    insertVal(1:ipToFindPerIm,4) = rowIdx+rowIndexes(rowOrigIndexes(1:ipToFindPerIm));
+
+                    mappedIndexes = [mappedIndexes;insertVal];
+                end
             end
         end
     end

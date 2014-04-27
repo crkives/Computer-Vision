@@ -44,8 +44,18 @@ function [ predictor ] = trainSVM( X, Y, kernelFunction )
     for index = 1:size(X,2)
         kernelMatrix(index, : ) = linearKernelFunction( X, X(:, index) );
     end
-    talk = 'build kernel matrix'
+    talk = 'build kernel matrix using loop'
     toc
+    
+    %tic
+    %X_RepCells = mat2Cell(X, numRows, numCols);
+    %X_RepCells = repmat(X_RepCells,[1 numCols]);
+    %X_ObsCells = num2cell(X, 1);
+    %kernelMatrix = arrayfun(@linearKernelFunction, X_RepCells, X_ObsCells, 'UniformOutput', false);
+    %kernelMatrix = reshape(kernelMatrix, numCols, numCols);
+    %talk = 'built kernel matrix using arrayfun'
+    %toc
+    
     kernelMatrix = y_pairwise .* kernelMatrix;
     % Linear terms of the target function for optimization
     linearTerms = -ones( numCols );

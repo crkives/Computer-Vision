@@ -11,8 +11,10 @@ function [descriptors, sizing]=spaitialBinning(imGradientMat, windowSizeR, windo
     
     x=posX*((1:gapX)-1)+1;
     y=posY*((1:gapY)-1)+1;
-    positionsX=repmat(x, size(y));
+    positionsX=meshgrid(x,y);
+    positionsX = positionsX(:);
     positionsY=repmat(y, size(x));
+    positionsY=positionsY(:);
 
 %      extractFunc = @(r,c) {...
 %                             fprintf('r=%d', r),...

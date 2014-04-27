@@ -15,9 +15,10 @@ for i=1:1
     svmSizes = [svmSizes,sizes];
     
      if i > lenPos
-         svmLabels = [svmLabels, zeros(1,size(svmInput,1))];
+         svmLabels = [svmLabels, zeros(1,size(descs,1))];
      else
          annoCount = boundingBoxes(i,1);
+         label = zeros(1,size(descs,1));
          for j = 1:annoCount
              index = 4*(j-1)+1;
              x=boundingBoxes(i,index+1);
@@ -26,13 +27,14 @@ for i=1:1
              %these below might be reversed (double check)
              [~,xPos] = min(abs(svmSizes(:,1)-x));
              [~,yPos] = min(abs(svmSizes(:,2)-y));
-             xVal = svmSizes(xPos);
-             yVal = svmSizes(yPos);
+             xVal = svmSizes(xPos,1);
+             yVal = svmSizes(yPos,2);
              
-             ismember(svmSizes, [xVal,yVal])
+             [hasValue, position] = ismember([xVal,yVal], svmSizes, 'rows');
              
-             svmLabels = [svmLabels, ];
+             label(position) = 1;
          end
+         svmLabels = [svmLabels, label];
      end
 end
 toc

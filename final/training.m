@@ -1,18 +1,17 @@
 %training
-lenPos = length(imagesNeg);
-lenNeg = length(imagesPos);
+lenPos = length(imagesPos)
+lenNeg = length(imagesNeg)
 images = [imagesPos; imagesNeg];
-boundingBoxes = csvread('train/annotations.csv');
+boundingBoxes = csvread('../../train/annotations.csv');
 
 tic;
 svmLabels = [];
 svmInput = [];
-svmSizes = [];
-for i=1:1
+for i=1:length(images)
+    i
     grad = generateGradient(hogNormalizeIm(images{i}));
     [descs,sizes] = spaitialBinning(grad, 64, 128, 8, 9, 20); 
-    svmInput = [svmInput,cell2mat(descs)];
-    svmSizes = [svmSizes,sizes];
+    svmInput = [svmInput,cell2mat(descs')];
     
      if i > lenPos
          svmLabels = [svmLabels, zeros(1,size(descs,1))];
@@ -25,12 +24,12 @@ for i=1:1
              y=boundingBoxes(i,index+2);
              
              %these below might be reversed (double check)
-             [~,xPos] = min(abs(svmSizes(:,1)-x));
-             [~,yPos] = min(abs(svmSizes(:,2)-y));
-             xVal = svmSizes(xPos,1);
-             yVal = svmSizes(yPos,2);
+             [~,xPos] = min(abs(sizes(:,1)-x));
+             [~,yPos] = min(abs(sizes(:,2)-y));
+             xVal = sizes(xPos,1);
+             yVal = sizes(yPos,2);
              
-             [hasValue, position] = ismember([xVal,yVal], svmSizes, 'rows');
+             [hasValue, position] = ismember([xVal,yVal], sizes, 'rows');
              
              label(position) = 1;
          end
@@ -40,4 +39,4 @@ end
 toc
 
 
-%svm = svmtrain(svmInput, labels);
+svm = svmtrain(svmInput, svmLabels');

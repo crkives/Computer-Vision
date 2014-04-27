@@ -10,8 +10,8 @@
 %OUTPUT:
 % features - matrix where rows are kernel(Xi,xNew)
 function [ features ] = linearKernelFunction( X, xNew )
-    X = cell2mat(X);
-    xNew = cell2mat(xNew);
+%     X = cell2mat(X);
+%     xNew = cell2mat(xNew);
     numCols = size(X,2);
     % repeat the new x the same number of times as the number of
     % observations

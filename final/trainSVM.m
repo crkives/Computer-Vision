@@ -42,7 +42,7 @@ function [ predictor ] = trainSVM( X, Y, kernelFunction )
     % observation corresponding to that column.
     tic
     for index = 1:size(X,2)
-        kernelMatrix(index, : ) = linearKernelFunction( X, X(:, index) );
+        kernelMatrix(index, : ) = kernelFunction( X, X(:, index) );
     end
     talk = 'build kernel matrix using loop'
     toc
@@ -58,14 +58,17 @@ function [ predictor ] = trainSVM( X, Y, kernelFunction )
     
     kernelMatrix = y_pairwise .* kernelMatrix;
     % Linear terms of the target function for optimization
-    linearTerms = -ones( numCols );
+    linearTerms = -ones( 1, numCols );
+    lowerBound = zeros(numCols,1);
     slackTerm = 0.01;
+    upperBound = slackTerm*ones(numCols,1);
+    eqConstraint = zeros(1,numCols);
     % Calculate the Lagrange multipliers by optimizing the kernel
     % function's dual with linear terms of -1 and no equality constraint of
     % Sum over i of classification * lagrange multiplier equal to 0 (i.e.
     % Sum_i( y_i*a_i ) = 0 )
     tic
-    lagrangeMultipliers = quadprod( kernelMatrix, linearTerms, [], [], Y, 0, 0, slackTerm );
+    lagrangeMultipliers = quadprog( kernelMatrix, linearTerms, [], [], Y, 0, lowerBound, upperBound );
     talk = 'time for optimization:'
     toc
     
@@ -79,12 +82,12 @@ function [ predictor ] = trainSVM( X, Y, kernelFunction )
     [SVRows SVCols] = size(supportVectors);
     supportKernelMatrix = zeros (SVCols, SVCols);
     for index = 1:SVCols
-        supportKernelMatrix(index, :) = linearKernelFunction(supportVectors, supportVectors(:, index) );
+        supportKernelMatrix(index, :) = kernelFunction(supportVectors, supportVectors(:, index) );
     end
-    lagrangeY = supportLagrangians .* supportLabels;
-    lagrangeYMat = repmat(lagrangeY, [SVRows 1]);
-    lagrangeYSupportMat = bsxfun(@times, lagrangeYMat, supportKernelMatrix);
-    rowSumOfLagrangeYSupportMat = sum(lagrangeYSupportMat, 2);
+    lagrangeY = supportLagrangians' .* supportLabels;
+    lagrangeYMat = repmat(lagrangeY, [SVCols 1]);
+    lagrangeYSupportMat = bsxfun(@times, supportKernelMatrix, lagrangeYMat);
+    rowSumOfLagrangeYSupportMat = sum(lagrangeYSupportMat, 1);
     bias = (1/SVCols) * sum(supportLabels - rowSumOfLagrangeYSupportMat);
     talk = 'calculated the bias:'
     toc
